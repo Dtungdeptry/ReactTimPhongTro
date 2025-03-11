@@ -8,29 +8,57 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    try {
-      const response = await fetch("http://localhost:8080/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-  
-      const data = await response.json(); // Nhận phản hồi từ server
-  
-      if (response.ok) {
-        localStorage.setItem("token", data.token); // Lưu token vào localStorage
-        alert("Đăng nhập thành công!");
-        navigate("/admin"); // Chuyển hướng sau khi đăng nhập thành công
-      } else {
-        alert(data.message || "Sai tài khoản hoặc mật khẩu!");
-      }
-    } catch (error) {
-      console.error("Lỗi đăng nhập:", error);
-      alert("Lỗi hệ thống! Vui lòng thử lại.");
-    }
-  };
 
+    try {
+        const response = await fetch("http://localhost:8080/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+        console.log("Dữ liệu phản hồi từ server:", data);
+
+        if (response.ok) {
+            // Kiểm tra token trước khi lưu
+            if (data.token) {
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("userId", data.userId);
+                localStorage.setItem("roleId", data.roleId);
+
+                console.log("Token đã lưu:", localStorage.getItem("token"));
+                console.log("User ID đã lưu:", localStorage.getItem("userId"));
+                console.log("Role ID đã lưu:", localStorage.getItem("roleId"));
+
+                alert("Đăng nhập thành công!");
+
+                // Điều hướng dựa trên roleId
+                switch (parseInt(data.roleId)) {
+                    case 1:
+                        navigate("/admin");
+                        break;
+                    case 2:
+                        navigate("/user");
+                        break;
+                    case 3:
+                        navigate("/owner");
+                        break;
+                    default:
+                        alert("Không xác định vai trò!");
+                }
+            } else {
+                alert("Phản hồi không có token!");
+            }
+        } else {
+            alert(data.message || "Sai tài khoản hoặc mật khẩu!");
+        }
+    } catch (error) {
+        console.error("Lỗi đăng nhập:", error);
+        alert("Lỗi hệ thống! Vui lòng thử lại.");
+    }
+};
+
+  
   return (
     <div className="auth-container">
       <h2>Đăng Nhập</h2>

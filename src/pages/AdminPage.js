@@ -20,18 +20,37 @@ const AdminPage = () => {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('posts');
   const [activePostsTab, setActivePostsTab] = useState('all');
+  const [selectedPost, setSelectedPost] = useState(null);
+
 
   // Token management (assuming JWT is stored in localStorage)
   const getAuthHeader = () => {
     const token = localStorage.getItem('jwtToken');
+    if (!token) {
+        console.warn('Không tìm thấy token, vui lòng đăng nhập lại.');
+        return {};  // Trả về object rỗng nếu không có token
+    }
     return { Authorization: `Bearer ${token}` };
-  };
+};
   const statusMapping = {
     pending: "Đang Chờ",
     approved: "Đã Duyệt",
     rejected: "Bị Từ Chối"
   };
 
+  const getPostDetails = async (id) => {
+    console.log("Post ID:", id); // In ra ID để kiểm tra
+    try {
+        const response = await fetch(`http://localhost:8080/admin/post/${id}`);
+        const data = await response.json();
+        console.log("Post data:", data); // In ra data để kiểm tra
+        setSelectedPost(data); // Cập nhật bài đăng được chọn
+    } catch (error) {
+        console.error("Lỗi khi lấy chi tiết bài đăng:", error);
+        alert("Không thể lấy thông tin chi tiết bài đăng!");
+    }
+};
+  
   // Fetch all posts
   const fetchAllPosts = async () => {
     try {
@@ -42,7 +61,7 @@ const AdminPage = () => {
       setAllPosts(response.data);
       setLoading(false);
     } catch (err) {
-      setError('Failed to fetch posts');
+      setError('Không có bài đăng');
       setLoading(false);
     }
   };
@@ -57,7 +76,7 @@ const AdminPage = () => {
       setPendingPosts(response.data);
       setLoading(false);
     } catch (err) {
-      setError('Failed to fetch pending posts');
+      setError('Không có bài đăng đang chờ');
       setLoading(false);
     }
   };
@@ -72,7 +91,7 @@ const AdminPage = () => {
       setApprovedPosts(response.data);
       setLoading(false);
     } catch (err) {
-      setError('Failed to fetch approved posts');
+      setError('Không có bài đăng đã được duyệt');
       setLoading(false);
     }
   };
@@ -87,7 +106,7 @@ const AdminPage = () => {
       setRejectedPosts(response.data);
       setLoading(false);
     } catch (err) {
-      setError('Failed to fetch rejected posts');
+      setError('Không có bài đăng bị từ chối');
       setLoading(false);
     }
   };
@@ -107,6 +126,7 @@ const AdminPage = () => {
     }
   };
 
+  
   // Fetch users
   const fetchUsers = async () => {
     try {
@@ -137,7 +157,7 @@ const AdminPage = () => {
       setOwners(response.data);
       setLoading(false);
     } catch (err) {
-      setError('Failed to search owners');
+      setError('Không có tài khoản đang tìm');
       setLoading(false);
     }
   };
@@ -157,7 +177,7 @@ const AdminPage = () => {
       setUsers(response.data);
       setLoading(false);
     } catch (err) {
-      setError('Failed to search users');
+      setError('Không có người dùng cần tìm');
       setLoading(false);
     }
   };
@@ -174,7 +194,7 @@ const AdminPage = () => {
       fetchApprovedPosts();
       setLoading(false);
     } catch (err) {
-      setError('Failed to delete post');
+      setError('Xóa bài đăng không thành công');
       setLoading(false);
     }
   };
@@ -191,7 +211,7 @@ const AdminPage = () => {
       fetchOwners();
       setLoading(false);
     } catch (err) {
-      setError('Failed to delete owner');
+      setError('Không xóa được tài khoản vì vẫn còn tồn tại bài đăng');
       setLoading(false);
     }
   };
@@ -208,7 +228,7 @@ const AdminPage = () => {
       fetchUsers();
       setLoading(false);
     } catch (err) {
-      setError('Failed to delete user');
+      setError('Xóa người dùng không thành công');
       setLoading(false);
     }
   };
@@ -223,7 +243,7 @@ const AdminPage = () => {
       setOwnerPosts(response.data);
       setLoading(false);
     } catch (err) {
-      setError('Failed to fetch owner posts');
+      setError('Không có tài khoản đăng bài');
       setLoading(false);
     }
   };
@@ -240,10 +260,30 @@ const AdminPage = () => {
       viewOwnerPosts(userId);
       setLoading(false);
     } catch (err) {
-      setError('Failed to delete post');
+      setError('Xóa bài không thành công');
       setLoading(false);
     }
   };
+
+  const updatePostStatus = async (postId, newStatus) => {
+    if (!window.confirm(`Bạn có chắc muốn ${newStatus === "approved" ? "duyệt" : "từ chối"} bài đăng này?`)) return;
+    
+    try {
+      setLoading(true);
+      await axios.put(
+        `${API_BASE_URL}/admin/posts/${postId}?status=${newStatus}`,
+        {},  
+        { headers: getAuthHeader() } 
+      );
+      fetchAllPosts();
+    } catch (err) {
+      console.error(err);
+      setError("Không thể cập nhật trạng thái bài đăng");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
 
   // Promote user to owner
   const promoteUserToOwner = async (userId) => {
@@ -258,7 +298,7 @@ const AdminPage = () => {
       fetchUsers();
       setLoading(false);
     } catch (err) {
-      setError('Failed to update user role');
+      setError('Không nâng cấp người dùng được');
       setLoading(false);
     }
   };
@@ -357,8 +397,13 @@ const AdminPage = () => {
                         <td>{post.id}</td>
                         <td>{post.title}</td>
                         <td>
-  {users.find(user => Number(post.userId) === Number(user.id))?.fullName || "Không xác định"}
-</td>
+                        {
+                          users
+                            .filter(user => user.roleId === 3) // Lọc người dùng có roleId = 3
+                            .find(user => Number(post.userId) === Number(user.id))
+                            ?.fullName || "Không xác định"
+                        }
+                      </td>
 
                         <td>{statusMapping[post.status] || post.status}</td>
                         <td>{new Date(post.created_at).toLocaleDateString()}</td>
@@ -369,38 +414,79 @@ const AdminPage = () => {
               </div>
             )}
 
-            {activePostsTab === 'pending' && (
-              <div>
-                <h2>Bài Đăng Đang Chờ Duyệt</h2>
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Tiêu Đề</th>
-                      <th>Người Đăng</th>
-                      <th>Ngày Đăng</th>
-                      <th>Hành Động</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {pendingPosts.map(post => (
-                      <tr key={post.id}>
-                        <td>{post.id}</td>
-                        <td>{post.title}</td>
-                        <td>
-  {users.find(user => Number(user.id) === Number(post.userId))?.username || "Không xác định"}
-</td>
+{activePostsTab === 'pending' && (
+  <div className="posts-container">
+    <h2>Bài Đăng Đang Chờ Duyệt</h2>
+    <div className="content-wrapper">
+      <table className="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Tiêu Đề</th>
+            <th>Người Đăng</th>
+            <th>Ngày Đăng</th>
+            <th>Hành Động</th>
+          </tr>
+        </thead>
+        <tbody>
+          {pendingPosts.map((post) => (
+            <tr key={post.id}>
+              <td>{post.id}</td>
+              <td>{post.title}</td>
+              <td>{post.user?.fullName || "Không xác định"}</td>
+              <td>{new Date(post.created_at).toLocaleDateString()}</td>
+              <td>
+                <button
+                  className="btn btn-info"
+                  onClick={() => getPostDetails(post.id)}
+                >
+                  Xem Chi Tiết
+                </button>
+                <button
+                  className="btn btn-success"
+                  onClick={() => updatePostStatus(post.id, "approved")}
+                >
+                  Duyệt
+                </button>
+                <button
+                  className="btn btn-rejected"
+                  onClick={() => updatePostStatus(post.id, "rejected")}
+                >
+                  Từ Chối
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-                        <td>{new Date(post.created_at).toLocaleDateString()}</td>
-                        <td>
-                          <button className="btn btn-primary">Xem Chi Tiết</button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+      {selectedPost && (
+        <div className="post-details">
+          <h2>Chi Tiết Bài Đăng</h2>
+          <button
+            className="btn btn-danger"
+            onClick={() => setSelectedPost(null)}
+          >
+            X
+          </button>
+          <div className="post-info">
+            <p><strong>ID:</strong> {selectedPost.id}</p>
+            <p><strong>Tiêu Đề:</strong> {selectedPost.title}</p>
+            <p><strong>Nội Dung:</strong> {selectedPost.content}</p>
+            <p><strong>Người Đăng:</strong> {selectedPost.user?.fullName || "Không xác định"}</p>
+            <p><strong>Ngày Đăng:</strong> {new Date(selectedPost.created_at).toLocaleDateString()}</p>
+            <p><strong>Trạng Thái:</strong> {statusMapping[selectedPost.status] || "Không xác định"}</p>
+            <p><strong>Loại Phòng:</strong> {selectedPost.roomType?.typeName || "Không xác định"}</p>
+            <p><strong>Khoảng Giá:</strong> {selectedPost.priceRange?.rangeName || "Không xác định"}</p>
+            <p><strong>Địa Chỉ:</strong> {selectedPost.location?.address || "Không xác định"}</p>
+            <p><strong>Diện tích:</strong> {selectedPost.area?.size ? `${selectedPost.area.size}m²` : "Không xác định"}</p>
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+)}
+
 
             {activePostsTab === 'approved' && (
               <div>
@@ -421,24 +507,23 @@ const AdminPage = () => {
                         <td>{post.id}</td>
                         <td>{post.title}</td>
                         <td>
-  {users.find(user => Number(user.id) === Number(post.userId))?.username || "Không xác định"}
-</td>
-
-                        <td>{new Date(post.createDate).toLocaleDateString()}</td>
-                        <td>
-                          <button 
-                            className="btn btn-danger"
-                            onClick={() => deleteApprovedPost(post.id)}
-                          >
-                            Xóa
-                          </button>
+                          {selectedUser?.fullName || "Không xác định"}
                         </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                        <td>{new Date(post.created_at).toLocaleDateString()}</td>
+                        <td>
+                        <button 
+                          className="btn btn-danger"
+                          onClick={() => deleteApprovedPost(post.id)}
+                        >
+                          Xóa
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
 
             {activePostsTab === 'rejected' && (
               <div>
@@ -458,10 +543,9 @@ const AdminPage = () => {
                         <td>{post.id}</td>
                         <td>{post.title}</td>
                         <td>
-  {users.find(user => Number(user.id) === Number(post.userId))?.username || "Không xác định"}
-</td>
-
-                        <td>{new Date(post.createDate).toLocaleDateString()}</td>
+                          {selectedOwner?.fullName || "Không xác định"}
+                        </td>                        
+                        <td>{new Date(post.created_at).toLocaleDateString()}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -527,11 +611,14 @@ const AdminPage = () => {
               {selectedOwner && (
                 <div className="owner-details">
                   <h2>Chi Tiết Tài Khoản</h2>
+                  <button className="btn btn-danger-close" onClick={() => setSelectedOwner(null)}>X</button>
                   <div className="user-info">
                     <p><strong>ID:</strong> {selectedOwner.id}</p>
                     <p><strong>Họ Tên:</strong> {selectedOwner.fullName}</p>
                     <p><strong>Email:</strong> {selectedOwner.email}</p>
                     <p><strong>Điện Thoại:</strong> {selectedOwner.phone}</p>
+                    <p><strong>Địa Chỉ:</strong> {selectedOwner.address}</p>
+                    <p><strong>Thời Gian Tạo Tài Khoản:</strong> {new Date(selectedOwner.created_at).toLocaleDateString()}</p>
                   </div>
 
                   <h3>Bài Đăng Của Tài Khoản</h3>
@@ -551,7 +638,7 @@ const AdminPage = () => {
                           <td>{post.id}</td>
                           <td>{post.title}</td>
                           <td>{statusMapping[post.status] || post.status}</td>
-                          <td>{new Date(post.createDate).toLocaleDateString()}</td>
+                          <td>{new Date(post.created_at).toLocaleDateString()}</td>
                           <td>
                             <button 
                               className="btn btn-danger"
@@ -632,11 +719,14 @@ const AdminPage = () => {
               {selectedUser && (
                 <div className="user-details">
                   <h2>Chi Tiết Người Dùng</h2>
+                  <button className="btn btn-danger" onClick={() => setSelectedUser(null)}>X</button>
                   <div className="user-info">
                     <p><strong>ID:</strong> {selectedUser.id}</p>
                     <p><strong>Họ Tên:</strong> {selectedUser.fullName}</p>
                     <p><strong>Email:</strong> {selectedUser.email}</p>
                     <p><strong>Điện Thoại:</strong> {selectedUser.phone}</p>
+                    <p><strong>Địa Chỉ:</strong> {selectedUser.address}</p>
+                    <p><strong>Thời Gian Tạo Tài Khoản:</strong> {new Date(selectedUser.created_at).toLocaleDateString()}</p>
                   </div>
                 </div>
               )}

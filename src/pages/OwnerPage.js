@@ -20,7 +20,7 @@ const OwnerPage = () => {
   const [locations, setLocations] = useState([]);
   const [areas, setAreas] = useState([]);
   const userId = localStorage.getItem("userId");
-  const token = localStorage.getItem("token"); // Hoặc sessionStorage
+  const token = localStorage.getItem("token"); 
   
   useEffect(() => {
     fetchPosts();
@@ -88,23 +88,59 @@ const OwnerPage = () => {
 };
 
 
-  const searchPosts = async () => {
-    try {
-      const response = await axios.get(`http://localhost:8080/owner/post/${userId}/search?keyword=${searchKeyword}`);
-      setPosts(response.data);
-    } catch (error) {
-      console.error('Error searching posts:', error);
-    }
-  };
+const searchPosts = async (keyword) => {
+  try {
+    const response = await axios.get(`http://localhost:8080/owner/post/${userId}/search?keyword=${keyword}`);
+    setPosts(response.data);
+  } catch (error) {
+    console.error('Error searching posts:', error);
+  }
+};
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
-    searchPosts();
+    if (searchKeyword.trim() === "") {
+      // Nếu không có từ khóa, reload lại tất cả bài
+      try {
+        const response = await axios.get(`http://localhost:8080/owner/post/${userId}`);
+        setPosts(response.danpcdta);
+      } catch (error) {
+        console.error("Error loading all posts:", error);
+      }
+    } else {
+      // Gọi hàm tìm kiếm
+      searchPosts();
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    const keyword = e.target.value;
+    setSearchKeyword(keyword);
+  
+    // Tìm kiếm ngay khi có thay đổi
+    if (keyword.trim() === "") {
+      // Nếu không có từ khóa, load lại tất cả bài
+      loadAllPosts();
+    } else {
+      // Nếu có từ khóa, gọi hàm tìm kiếm
+      searchPosts(keyword);
+    }
+  };
+  
+  // Hàm load tất cả bài viết
+  const loadAllPosts = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/owner/post/${userId}`);
+      setPosts(response.data);
+    } catch (error) {
+      console.error("Error loading all posts:", error);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -170,6 +206,7 @@ const OwnerPage = () => {
     setSelectedPost(null);
     setIsEditing(false);
   };
+
   const formattedStatus = (status) => {
     switch (status) {
       case 'pending': return 'Đang Chờ Duyệt';
@@ -177,7 +214,7 @@ const OwnerPage = () => {
       case 'rejected': return 'Bị Từ Chối';
       default: return status;
     }
-};
+  };
 
   const getStatusBadgeClass = (status) => {
     switch (status) {
@@ -187,6 +224,11 @@ const OwnerPage = () => {
       default: return '';
     }
   };
+  
+  const handleAccount = () => {
+    window.location.href = "/account-owner";
+  };
+  
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' };
@@ -196,9 +238,12 @@ const OwnerPage = () => {
   return (
     <div className="owner-page">
       <div className="header">
-        <h1>Quản Lý Bài Đăng</h1>
+        <h1>Xin chào, hôm nay có gì mới?</h1>
+        <div className="user-actions">
+          <button className="notification-btn">🔔 Thông báo</button>
+          <button className="account-btn" onClick={handleAccount}>👤 Tài khoản</button>
+        </div>
       </div>
-      
       <div className="content">
         <div className="left-panel">
           <div className="search-container">
@@ -207,14 +252,16 @@ const OwnerPage = () => {
                 type="text"
                 placeholder="Tìm kiếm bài đăng..."
                 value={searchKeyword}
-                onChange={(e) => setSearchKeyword(e.target.value)}
+                onChange={handleSearchChange}
               />
               <button type="submit">Tìm kiếm</button>
             </form>
           </div>
           
+          <div className="post-header">
+    <h2>Danh sách bài đăng</h2>
+    </div>
           <div className="post-list">
-            <h2>Danh sách bài đăng</h2>
             {posts.length === 0 ? (
               <p>Không có bài đăng nào.</p>
             ) : (
@@ -223,11 +270,11 @@ const OwnerPage = () => {
                   <div className="post-header">
                     <h3>{post.title}</h3>
                     <span className={getStatusBadgeClass(post.status)}>
-                    {formattedStatus(post.status)}
+                     Trạng thái: {formattedStatus(post.status)}
                     </span>
                   </div>
                   <div className="post-details">
-                    <p><strong>Tiêu đề:</strong> {post.content}</p>
+                    <p><strong>Nội dung:</strong> {post.content}</p>
                     <p><strong>Loại phòng:</strong> {post.roomType?.typeName}</p>
                     <p><strong>Khu vực:</strong> {post.location?.address}</p>
                     <p><strong>Giá:</strong> {post.priceRange?.rangeName}</p>
@@ -245,6 +292,7 @@ const OwnerPage = () => {
         </div>
         
         <div className="right-panel">
+          <div className="right-panel-top">
           <h2>{isEditing ? 'Cập nhật bài đăng' : 'Thêm bài đăng mới'}</h2>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
@@ -327,6 +375,17 @@ const OwnerPage = () => {
                 ))}
               </select>
             </div>
+
+            <div className="form-group">
+              <label>Hình ảnh</label>
+              <input
+                type="file"
+                name="image"
+                // onChange={handleFileChange}
+                accept="image/*"
+                required
+              />
+            </div>
             
             <div className="form-actions">
               <button type="submit">{isEditing ? 'Cập nhật' : 'Thêm mới'}</button>
@@ -335,6 +394,14 @@ const OwnerPage = () => {
               )}
             </div>
           </form>
+          </div>
+          <div className="right-panel-bottom">
+            <p>Lưu ý: </p>
+            <span >- Mỗi tiêu đề đều nên có mã để chủ phòng dễ quản lý</span>
+            <span >  Ví dụ: A001</span>
+            <span >- không đăng những hình ảnh mang tính chất minh họa</span>
+            <span >- cung cấp đầy đủ thông tin bao gồm hình ảnh</span>
+          </div>
         </div>
       </div>
     </div>

@@ -25,11 +25,6 @@ const LoginPage = () => {
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("userId", data.userId);
                 localStorage.setItem("roleId", data.roleId);
-
-                console.log("Token đã lưu:", localStorage.getItem("token"));
-                console.log("User ID đã lưu:", localStorage.getItem("userId"));
-                console.log("Role ID đã lưu:", localStorage.getItem("roleId"));
-
                 alert("Đăng nhập thành công!");
 
                 // Điều hướng dựa trên roleId

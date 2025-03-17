@@ -1,13 +1,13 @@
 /* src/styles/Auth.css */
 body {
-  background: url('../img/background.jpg');
+  background: url('../styles/img/background.jpg');
   background-size: cover;
   margin: 0;
   padding: 0;
   height: 100vh;
   background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 .main-tabs {
@@ -93,4 +93,20 @@ body {
     text-decoration: none;
     color: #333;
   }
+
+  .header-owner {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 90px;
+  }
+  
+  .back-button {
+    background-color: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  
   

@@ -4,6 +4,9 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import AdminPage from "./pages/AdminPage";
 import OwnerPage from "./pages/OwnerPage";
+import AccountPage from "./pages/AccountPage";
+import UserPage from "./pages/UserPage";
+import AccountUser from "./pages/AccoutUser";
 
 function App() {
   return (
@@ -14,6 +17,9 @@ function App() {
         <Route  path="/register" element={<RegisterPage />} />
         <Route  path="/admin" element={<AdminPage />} />
         <Route  path="/owner" element={<OwnerPage />} />
+        <Route path="/account-owner" element={<AccountPage />} />
+        <Route path="/account-user" element={<AccountUser />} />
+        <Route path="/user" element={<UserPage />} />
       </Routes>
     </Router>
   );

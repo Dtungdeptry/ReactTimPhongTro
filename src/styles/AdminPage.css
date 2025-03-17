@@ -1,6 +1,6 @@
 /* AdminPage.css */
 #root {
-    margin-top: 10px;
+    margin: 0;
 }
 .admin-page {
     max-width: 1200px;
@@ -291,3 +291,4 @@
       text-align: left;
     }
   }
+

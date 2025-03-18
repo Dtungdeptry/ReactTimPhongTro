@@ -17,7 +17,7 @@
     border-radius: 20px;
   }
   
-  .logo {
+.logo {
     display: flex;
     align-items: center;
     gap: 10px; 

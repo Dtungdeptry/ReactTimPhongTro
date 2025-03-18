@@ -258,7 +258,7 @@ const UserPage = () => {
         <div className="search-section">
           <h2>Tìm kiếm phòng trọ</h2>
           <form className="search-form" onSubmit={handleSearch}>
-            <h3>Tìm kiếm theo nhu cầu</h3>
+            <h3>Tìm kiếm nâng cao</h3>
             <div className="search-filters">
               <div className="filter-group">
                 <label>Khoảng giá</label>

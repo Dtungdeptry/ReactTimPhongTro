@@ -1,6 +1,6 @@
 /* src/styles/Auth.css */
 body {
-  background: url('../styles/img/background.jpg');
+  background: url('../public/img/background.jpg');
   background-size: cover;
   margin: 0;
   padding: 0;

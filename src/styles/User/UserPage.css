@@ -1,12 +1,12 @@
 /* UserPage.css */
 .user-page {
     font-family: 'Roboto', sans-serif;
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: 100%;
+    /* margin: 0 auto; */
     padding: 20px;
   }
   
-  .user-header {
+.user-header {
     margin-bottom: 20px;
     text-align: center;
     display: flex;
@@ -14,8 +14,8 @@
     align-items: center;
     padding: 0 25px;
     background-color: #f9f9f9;
-    border-radius: 20px;
-  }
+    border-radius: 20px;  
+}
   
 .logo {
     display: flex;
@@ -37,12 +37,18 @@
     margin: 0;
 }
 
-  .user-content {
+.user-content {
     display: flex;
-    flex-direction: column;
-    gap: 30px;
-  }
-  .profile-section .profile-section-header {
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.left-content {
+    flex: 3;
+    margin-right: 20px;
+}
+
+.profile-section .profile-section-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -56,7 +62,7 @@
     background-color: #007bff;
     color: white;
     border: none;
-    padding: 8px 12px;
+    padding: 2px 12px;
     border-radius: 4px;
     cursor: pointer;
     margin: auto;
@@ -75,7 +81,7 @@
     padding-right: 160px;
 }
 
-  .profile-section {
+.profile-section {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -88,36 +94,37 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
   
-  .logout-button {
+.logout-button {
     padding: 8px 26px;
     background-color: #007bff;
     color: #fff;
     border: none;
     border-radius: 15px;
     cursor: pointer;
-  }
-   .logout-button:hover {
-    background-color: #0056b3;
-   }
+}
 
-  .profile-container {
+.logout-button:hover {
+    background-color: #0056b3;
+}
+
+.profile-container {
     background-color: white;
     border-radius: 20px;
     width: 460px;
     padding: 30px;
-  }
+}
   
-  .profile-info p {
+.profile-info p {
     margin: 10px 0;
     padding: 10px;
     border-bottom: 1px solid #eee;
-  }
+}
   
-  .profile-info p:last-child {
+.profile-info p:last-child {
     border-bottom: none;
-  }
+}
   
-  .edit-button {
+.edit-button {
     background-color: #2196f3;
     color: white;
     border: none;
@@ -128,106 +135,77 @@
     font-size: 16px;
     font-weight: bold;
 
-  }
+}
   
-  .profile-form {
+.profile-form {
     display: flex;
     flex-direction: column;
     gap: 15px;
-  }
+}
   
-  .form-group {
+.form-group {
     display: flex;
     flex-direction: column;
-  }
+}
   
-  .form-group label {
+.form-group label {
     margin-bottom: 5px;
     font-weight: bold;
-  }
+}
   
-  .form-group input {
+.form-group input {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 20px;
     font-size: 16px;
-  }
+}
   
-  .form-actions {
+.form-actions {
     display: flex;
     gap: 10px;
     margin-top: 10px;
-  }
+}
   
-  .form-actions button {
+.form-actions button {
     padding: 10px 22-px;
     border: none;
     border-radius: 220px;
     cursor: pointer;
     font-size: 16px;
-  }
+}
   
-  .form-actions button:first-child {
+.form-actions button:first-child {
     background-color: #4caf50;
     color: white;
-  }
+}
   
-  .form-actions button:last-child {
+.form-actions button:last-child {
     background-color: #f44336;
     color: white;
-  }
+}
   
   /* Search Section */
-  .search-section {
-    background-color: #f5f5f5;
-    border-radius: 20px;
-    padding: 5px 20px 20px 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
   
-  .search-button {
-    background-color: #2196f3;
-    color: white;
-    border: none;
-    border-radius: 220px;
-    padding: 10px 15px;
-    margin-top: 10px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-
-  }
-
-  .search-form {
-    background-color: white;
-    padding: 5px 20px 20px 20px;
-    border-radius: 8px;
-  }
-  
-  .search-filters {
+.search-filters {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 15px;
     margin-bottom: 20px;
-  }
+}
   
-  .filter-group {
-    display: flex;
-    flex-direction: column;
-  }
+.filter-group {
+  display: flex;
+  flex-direction: column;
+}
   
-  .filter-group label {
+.filter-group label {
     margin-bottom: 5px;
     font-size: 18px;
-    }
+}
+
 .search-form h3 {
     color: #0069d9;
     text-transform: uppercase;
-}
-
-.filter-group select {
-    padding: 5px 10px;
-    border-radius: 20px;
 }
 
 .posts-section {
@@ -241,10 +219,10 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;
-    background: url('../img/bg-section.jpg');
+    background: url('/src/public/img/bg-section.jpg');
     padding: 20px 20px 20px 20px;
     border-radius: 20px;
-    max-height: 86vh; /* Chiều cao tối đa của vùng cuộn */
+    max-height: 110vh; /* Chiều cao tối đa của vùng cuộn */
     overflow-y: auto;
 }
 
@@ -266,6 +244,7 @@
     object-fit: cover;
     border-bottom: 2px solid #ddd;
 }
+
 .post-info {
     padding: 15px;
 }
@@ -311,4 +290,174 @@
 
 .view-details-button:hover {
     background-color: #155a9d;
+}
+
+.search-section {
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 20px;
+  padding: 5px 20px 20px 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-section h2 {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.search-section h3 {
+  font-size: 20px;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.search-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background-color: white;
+  padding: 5px 20px 20px 20px;
+  border-radius: 20px;
+}
+
+.search-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.filter-group {
+  flex: 1 1 calc(50% - 15px);
+  min-width: 200px;
+}
+
+.filter-group label {
+  font-size: 16px;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.filter-group select {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 16px;
+  border-radius: 20px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s;
+}
+
+.filter-group select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.search-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.search-button:hover {
+  background-color: #0056b3;
+}
+
+.new-posts-section {
+  background-color: #fff;
+  border-radius: 20px;
+  padding: 5px 20px 20px 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.right-content {
+  flex: 1;
+  max-width: 300px;
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-radius: 20px;
+  margin-top: 20px;
+}
+
+.new-posts-section ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.new-posts-section li {
+  background-color: #fff;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.new-posts-section li:hover {
+  transform: translateY(-5px);
+}
+
+/* Tiêu đề bài đăng */
+.new-posts-section h4 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #007bff;
+  margin-bottom: 10px;
+  transition: color 0.3s;
+}
+
+.new-posts-section h4:hover {
+  color: #0056b3;
+  cursor: pointer;
+}
+
+/* Nội dung bài đăng */
+.new-posts-section p {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 10px;
+  line-height: 1.5;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Ngày đăng */
+.new-posts-section p strong {
+  font-weight: bold;
+  color: #333;
+}
+
+/* Cắt ngắn nội dung nếu quá dài */
+.new-posts-section p.post-content {
+  display: -webkit-box;
+  -webkit-line-clamp: 3; 
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.post-thumbnail {
+  width: 100px;   
+  height: 100px;  
+  overflow: hidden;  
+  border-radius: 8px; 
+  margin-bottom: 15px;
+  display: inline-block; 
+}
+
+/* Ảnh vuông */
+.post-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Đảm bảo ảnh không bị méo và bao phủ hết phần tử */
 }

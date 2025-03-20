@@ -377,7 +377,7 @@ const searchPosts = async (keyword) => {
             </div>
 
             <div className="form-group">
-              <label>Hình ảnh</label>
+              <label>Hình ảnh đại diện</label>
               <input
                 type="file"
                 name="image"
@@ -387,6 +387,17 @@ const searchPosts = async (keyword) => {
               />
             </div>
             
+            <div className="form-group">
+              <label>Hình ảnh chi tiết</label>
+              <input
+                type="file"
+                name="image"
+                // onChange={handleFileChange}
+                accept="image/*"
+                required
+              />
+            </div>
+
             <div className="form-actions">
               <button type="submit">{isEditing ? 'Cập nhật' : 'Thêm mới'}</button>
               {isEditing && (

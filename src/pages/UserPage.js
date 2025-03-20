@@ -3,12 +3,13 @@ import axios from 'axios';
 import '../styles/User/UserPage.css';
 import { useNavigate } from 'react-router-dom';
 
-
 const UserPage = () => {
   const userId = localStorage.getItem("userId");
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [userForm, setUserForm] = useState({
     username: '',
     fullName: '',
@@ -29,11 +30,15 @@ const UserPage = () => {
   const [roomTypes, setRoomTypes] = useState([]);
   const [locations, setLocations] = useState([]);
   const [areas, setAreas] = useState([]);
+  const handleViewDetails = (post) => {
+    navigate(`/post/${post.id}`);
+  };  
 
   useEffect(() => {
     fetchUserData();
     fetchApprovedPosts();
     fetchFilterOptions();
+    fetch5LatestPost();
   }, [userId]);
 
   const fetchUserData = async () => {
@@ -52,6 +57,19 @@ const UserPage = () => {
       console.error('Error fetching user data:', error);
     }
   };
+
+  const fetch5LatestPost = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/user/post/latest");
+      console.log(response.data);
+      setPosts(response.data); // Lưu vào state mà không cần slice nữa
+      setLoading(false); // Đã tải xong dữ liệu
+    } catch (error) {
+      console.error('Error fetching Latest posts:', error);
+      setError('Có lỗi xảy ra khi tải bài đăng'); // Cập nhật thông báo lỗi
+      setLoading(false); // Đã tải xong dữ liệu dù có lỗi
+    }
+  };  
 
   const fetchApprovedPosts = async () => {
     try {
@@ -162,8 +180,8 @@ const UserPage = () => {
   return (
     <div className="user-page">
       <div className="user-header">
-      <a href="/user" class="logo">
-          <img src="../styles/img/logo.jpg" alt="Logo"></img>
+      <a href="/user" className="logo">
+          <img src="/src/public/img/logo.jpg" alt="Logo"></img>
           <h1>Nhà Hà Nội</h1>
       </a>
         <div className="user-actions">
@@ -174,91 +192,11 @@ const UserPage = () => {
       </div>
       
       <div className="user-content">
-        
-         {/* <div className="profile-section">
-          <h2>Thông tin cá nhân</h2>
-          {!user ? (
-            <div className="loading">Đang tải...</div>
-          ) : (
-            <div className="profile-container">
-              {isEditing ? (
-                <form className="profile-form" onSubmit={handleUpdateUser}>
-                  <div className="form-group">
-                    <label>Tên đăng nhập</label>
-                    <input
-                      type="text"
-                      name="username"
-                      value={userForm.username}
-                      onChange={handleUserFormChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label>Họ tên</label>
-                    <input
-                      type="text"
-                      name="fullName"
-                      value={userForm.fullName}
-                      onChange={handleUserFormChange}
-                      required
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label>Email</label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={userForm.email}
-                      onChange={handleUserFormChange}
-                      required
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label>Số điện thoại</label>
-                    <input
-                      type="text"
-                      name="phoneNumber"
-                      value={userForm.phone}
-                      onChange={handleUserFormChange}
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label>Địa chỉ</label>
-                    <input
-                      type="text"
-                      name="address"
-                      value={userForm.address}
-                      onChange={handleUserFormChange}
-                    />
-                  </div>
-                  
-                  <div className="form-actions">
-                    <button type="submit">Lưu thay đổi</button>
-                    <button type="button" onClick={() => setIsEditing(false)}>Hủy</button>
-                  </div>
-                </form>
-              ) : (
-                <div className="profile-info">
-                  <p><strong>Tên đăng nhập:</strong> {user.username}</p>
-                  <p><strong>Họ tên:</strong> {user.fullName}</p>
-                  <p><strong>Email:</strong> {user.email}</p>
-                  <p><strong>Số điện thoại:</strong> {user.phone || 'Chưa cập nhật'}</p>
-                  <p><strong>Địa chỉ:</strong> {user.address || 'Chưa cập nhật'}</p>
-                  <button className="edit-button" onClick={() => setIsEditing(true)}>Chỉnh sửa thông tin</button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>  */}
-        
+        <div className="left-content">
         <div className="search-section">
           <h2>Tìm kiếm phòng trọ</h2>
           <form className="search-form" onSubmit={handleSearch}>
-            <h3>Tìm kiếm nâng cao</h3>
+            <h3>Bộ Lọc</h3>
             <div className="search-filters">
               <div className="filter-group">
                 <label>Khoảng giá</label>
@@ -341,13 +279,42 @@ const UserPage = () => {
                         <p><strong>Loại phòng: </strong><i className="icon type-icon"></i>{post.roomType?.typeName || "Không xác định"}</p>
                         </div>
                         <p className="post-date"><strong>Đăng ngày: </strong>{formatDate(post.created_at)}</p>
-                        <button className="view-details-button">Xem chi tiết</button>
+                        <button className="view-details-button" onClick={() => handleViewDetails(post)}>Xem chi tiết</button>
                     </div>
                     </div>
                 ))}
             </div>
           )}
         </div>
+        </div>
+        
+        <div className="right-content">
+          <div className="new-posts-section">
+            <h3>Bài đăng mới</h3>
+            <ul>
+              {posts.slice(0, 5).map((post) => (
+                <li key={post.id}>
+                  <div className="post-thumbnail">
+                    <img
+                      src={post.imageUrl || "default-image.jpg"}
+                      alt="Post thumbnail"
+                    />
+                  </div>
+                  <h4 onClick={() => handleViewDetails(post)}>{post.title}</h4>
+                  <p className="post-content">{post.content}</p>
+                  <p>
+                    <strong>Ngày đăng:</strong>{" "}
+                    {new Date(post.created_at).toLocaleString()}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div className="user-footer">
+
       </div>
     </div>
   );

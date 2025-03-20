@@ -7,6 +7,7 @@ import OwnerPage from "./pages/OwnerPage";
 import AccountPage from "./pages/AccountPage";
 import UserPage from "./pages/UserPage";
 import AccountUser from "./pages/AccoutUser";
+import PostInfoPage from "./pages/PostInfoPage";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/account-owner" element={<AccountPage />} />
         <Route path="/account-user" element={<AccountUser />} />
         <Route path="/user" element={<UserPage />} />
+        <Route path="/post/:id" element={<PostInfoPage />} />
       </Routes>
     </Router>
   );

@@ -31,7 +31,7 @@ const AdminPage = () => {
         return {};  // Trả về object rỗng nếu không có token
     }
     return { Authorization: `Bearer ${token}` };
-};
+  };
   const statusMapping = {
     pending: "Đang Chờ",
     approved: "Đã Duyệt",
@@ -49,7 +49,7 @@ const AdminPage = () => {
         console.error("Lỗi khi lấy chi tiết bài đăng:", error);
         alert("Không thể lấy thông tin chi tiết bài đăng!");
     }
-};
+  };
   
   // Fetch all posts
   const fetchAllPosts = async () => {
@@ -271,7 +271,7 @@ const AdminPage = () => {
     try {
       setLoading(true);
       await axios.put(
-        `${API_BASE_URL}/admin/posts/${postId}?status=${newStatus}`,
+        `${API_BASE_URL}/admin/post/${postId}?status=${newStatus}`,
         {},  
         { headers: getAuthHeader() } 
       );
@@ -283,7 +283,6 @@ const AdminPage = () => {
       setLoading(false);
     }
   };
-  
 
   // Promote user to owner
   const promoteUserToOwner = async (userId) => {
@@ -381,6 +380,7 @@ const AdminPage = () => {
             {activePostsTab === 'all' && (
               <div>
                 <h2>Tất Cả Bài Đăng</h2>
+                <div className="table-container">
                 <table className="data-table">
                   <thead>
                     <tr>
@@ -396,28 +396,21 @@ const AdminPage = () => {
                       <tr key={post.id}>
                         <td>{post.id}</td>
                         <td>{post.title}</td>
-                        <td>
-                        {
-                          users
-                            .filter(user => user.roleId === 3) // Lọc người dùng có roleId = 3
-                            .find(user => Number(post.userId) === Number(user.id))
-                            ?.fullName || "Không xác định"
-                        }
-                      </td>
-
+                        <td>{post.fullName}</td>
                         <td>{statusMapping[post.status] || post.status}</td>
                         <td>{new Date(post.created_at).toLocaleDateString()}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
+                </div>
               </div>
             )}
 
 {activePostsTab === 'pending' && (
   <div className="posts-container">
     <h2>Bài Đăng Đang Chờ Duyệt</h2>
-    <div className="content-wrapper">
+    <div className="table-container">
       <table className="data-table">
         <thead>
           <tr>
@@ -433,7 +426,7 @@ const AdminPage = () => {
             <tr key={post.id}>
               <td>{post.id}</td>
               <td>{post.title}</td>
-              <td>{post.user?.fullName || "Không xác định"}</td>
+              <td>{post.fullName}</td>
               <td>{new Date(post.created_at).toLocaleDateString()}</td>
               <td>
                 <button
@@ -473,7 +466,7 @@ const AdminPage = () => {
             <p><strong>ID:</strong> {selectedPost.id}</p>
             <p><strong>Tiêu Đề:</strong> {selectedPost.title}</p>
             <p><strong>Nội Dung:</strong> {selectedPost.content}</p>
-            <p><strong>Người Đăng:</strong> {selectedPost.user?.fullName || "Không xác định"}</p>
+            <p><strong>Người Đăng:</strong> {selectedPost.fullName || "Không xác định"}</p>
             <p><strong>Ngày Đăng:</strong> {new Date(selectedPost.created_at).toLocaleDateString()}</p>
             <p><strong>Trạng Thái:</strong> {statusMapping[selectedPost.status] || "Không xác định"}</p>
             <p><strong>Loại Phòng:</strong> {selectedPost.roomType?.typeName || "Không xác định"}</p>
@@ -491,6 +484,7 @@ const AdminPage = () => {
             {activePostsTab === 'approved' && (
               <div>
                 <h2>Bài Đăng Đã Được Duyệt</h2>
+                <div className="table-container">
                 <table className="data-table">
                   <thead>
                     <tr>
@@ -506,9 +500,7 @@ const AdminPage = () => {
                       <tr key={post.id}>
                         <td>{post.id}</td>
                         <td>{post.title}</td>
-                        <td>
-                          {selectedUser?.fullName || "Không xác định"}
-                        </td>
+                        <td>{post.fullName}</td>
                         <td>{new Date(post.created_at).toLocaleDateString()}</td>
                         <td>
                         <button 
@@ -521,13 +513,15 @@ const AdminPage = () => {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+                </table>
+                </div>
             </div>
           )}
 
             {activePostsTab === 'rejected' && (
               <div>
                 <h2>Bài Đăng Đã Bị Từ Chối</h2>
+                <div className="table-container">
                 <table className="data-table">
                   <thead>
                     <tr>
@@ -542,14 +536,13 @@ const AdminPage = () => {
                       <tr key={post.id}>
                         <td>{post.id}</td>
                         <td>{post.title}</td>
-                        <td>
-                          {selectedOwner?.fullName || "Không xác định"}
-                        </td>                        
+                        <td>{post.fullName}</td>                      
                         <td>{new Date(post.created_at).toLocaleDateString()}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
+                </div>
               </div>
             )}
           </div>

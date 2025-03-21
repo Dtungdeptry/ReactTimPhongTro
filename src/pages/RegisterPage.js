@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/Auth.css"; // Import CSS
+import "../styles/Auth.css"; 
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -17,20 +17,32 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const response = await fetch("http://localhost:8080/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-
-    if (response.ok) {
-      alert("Đăng ký thành công!");
-      navigate("/login");
-    } else {
-      alert("Lỗi đăng ký!");
+    
+    console.log("Dữ liệu gửi lên:", formData);
+  
+    try {
+      const response = await fetch("http://localhost:8080/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+  
+      if (response.ok) {
+        const message = await response.text();
+        alert(message);
+        localStorage.setItem("username", formData.username);
+        navigate("/otp");
+      } else {
+        const errorData = await response.text();
+        alert(`Lỗi đăng ký: ${errorData}`);
+      }      
+    } catch (error) {
+      alert("Lỗi kết nối hoặc máy chủ không phản hồi!");
+      console.error("Lỗi:", error);
     }
   };
+  
+
 
   return (
     <div className="auth-container">

@@ -8,6 +8,7 @@ import AccountPage from "./pages/AccountPage";
 import UserPage from "./pages/UserPage";
 import AccountUser from "./pages/AccoutUser";
 import PostInfoPage from "./pages/PostInfoPage";
+import OtpPage from "./pages/OtpPage";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/account-user" element={<AccountUser />} />
         <Route path="/user" element={<UserPage />} />
         <Route path="/post/:id" element={<PostInfoPage />} />
+        <Route path="/otp" element={<OtpPage />} />
       </Routes>
     </Router>
   );

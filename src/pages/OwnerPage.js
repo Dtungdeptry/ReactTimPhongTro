@@ -21,7 +21,9 @@ const OwnerPage = () => {
   const [areas, setAreas] = useState([]);
   const userId = localStorage.getItem("userId");
   const token = localStorage.getItem("token"); 
-  
+  const [imagePreview, setImagePreview] = useState(null);
+  const [detailImagePreview, setDetailImagePreview] = useState(null);
+
   useEffect(() => {
     fetchPosts();
     fetchDropdownData();
@@ -63,8 +65,7 @@ const OwnerPage = () => {
     } catch (error) {
         console.error("Lỗi khi gọi API:", error.response?.data || error.message);
     }
-  };
-  
+  }; 
   
   const fetchPosts = async () => {
     try {
@@ -87,7 +88,6 @@ const OwnerPage = () => {
     }
 };
 
-
 const searchPosts = async (keyword) => {
   try {
     const response = await axios.get(`http://localhost:8080/owner/post/${userId}/search?keyword=${keyword}`);
@@ -96,7 +96,6 @@ const searchPosts = async (keyword) => {
     console.error('Error searching posts:', error);
   }
 };
-
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -146,29 +145,39 @@ const searchPosts = async (keyword) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Transform form data to match API structure
+    const imageUrls = [];
+    if (formData.images && Array.isArray(formData.images)) {
+        for (let i = 0; i < formData.images.length; i++) {
+            const file = formData.images[i];
+            const url = URL.createObjectURL(file); 
+            imageUrls.push(url);
+        }
+    }
+
     const postData = {
-      userId: userId,
-      title: formData.title,
-      content: formData.content,
-      priceRange: { id: parseInt(formData.priceRangeId) },
-      roomType: { id: parseInt(formData.roomTypeId) },
-      location: { id: parseInt(formData.locationId) },
-      area: { id: parseInt(formData.areaId) }
+        userId: userId,
+        title: formData.title,
+        content: formData.content,
+        priceRange: { id: parseInt(formData.priceRangeId) },
+        roomType: { id: parseInt(formData.roomTypeId) },
+        location: { id: parseInt(formData.locationId) },
+        area: { id: parseInt(formData.areaId) },
+        images: imageUrls
     };
     
     try {
-      if (isEditing && selectedPost) {
-        await axios.put(`http://localhost:8080/owner/post/${userId}/${selectedPost.id}`, postData);
-      } else {
-        await axios.post(`http://localhost:8080/owner/post/${userId}`, postData);
-      }
-      resetForm();
-      fetchPosts();
+        if (isEditing && selectedPost) {
+            await axios.put(`http://localhost:8080/owner/post/${userId}/${selectedPost.id}`, postData);
+        } else {
+            await axios.post(`http://localhost:8080/owner/post/${userId}`, postData);
+        }
+        resetForm();
+        fetchPosts();
     } catch (error) {
-      console.error('Error saving post:', error);
+        console.error('Error saving post:', error);
     }
-  };
+};
+
 
   const handleDelete = async (postId) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa bài đăng này?')) {
@@ -184,14 +193,34 @@ const searchPosts = async (keyword) => {
   const handleEdit = (post) => {
     setSelectedPost(post);
     setFormData({
-      title: post.title,
-      content: post.content,
-      priceRangeId: post.priceRange?.id || '',
-      roomTypeId: post.roomType?.id || '',
-      locationId: post.location?.id || '',
-      areaId: post.area?.id || ''
+        title: post.title,
+        content: post.content,
+        priceRangeId: post.priceRange?.id || '',
+        roomTypeId: post.roomType?.id || '',
+        locationId: post.location?.id || '',
+        areaId: post.area?.id || '',
+        imageUrl: post.imageUrl || ''  
     });
     setIsEditing(true);
+  };
+
+  const handleFileChange = (e, type) => {
+    const files = Array.from(e.target.files); 
+    const previewUrls = files.map((file) => URL.createObjectURL(file));
+
+    if (type === "avatar") {
+        setImagePreview(previewUrls[0]); 
+        setFormData((prev) => ({
+            ...prev,
+            avatar: files[0], 
+        }));
+    } else if (type === "detail") {
+        setDetailImagePreview(previewUrls); 
+        setFormData((prev) => ({
+            ...prev,
+            images: files, 
+        }));
+    }
   };
 
   const resetForm = () => {
@@ -201,7 +230,8 @@ const searchPosts = async (keyword) => {
       priceRangeId: '',
       roomTypeId: '',
       locationId: '',
-      areaId: ''
+      areaId: '',
+      imageUrl: ''
     });
     setSelectedPost(null);
     setIsEditing(false);
@@ -280,9 +310,14 @@ const searchPosts = async (keyword) => {
                     <p><strong>Giá:</strong> {post.priceRange?.rangeName}</p>
                     <p><strong>Diện tích:</strong> {post.area?.size} m²</p>
                     <p><strong>Ngày đăng:</strong> {formatDate(post.created_at)}</p>
+                    <p><strong>Ảnh đại diện:</strong></p>
+                      {post.avatar && (
+                          <img src={post.avatar} alt="Avatar" style={{ width: "200px", margin: "5px" }} />
+                      )}
                   </div>
+
                   <div className="post-actions">
-                    <button onClick={() => handleEdit(post)}>Sửa</button>
+                    <button onClick={() => handleEdit(post)}>Chỉnh Sửa</button>
                     <button onClick={() => handleDelete(post.id)}>Xóa</button>
                   </div>
                 </div>
@@ -377,25 +412,32 @@ const searchPosts = async (keyword) => {
             </div>
 
             <div className="form-group">
-              <label>Hình ảnh đại diện</label>
-              <input
-                type="file"
-                name="image"
-                // onChange={handleFileChange}
-                accept="image/*"
-                required
-              />
+                <label>Hình ảnh đại diện</label>
+                <input
+                    type="file"
+                    name="avatar"
+                    onChange={(e) => handleFileChange(e, "avatar")}
+                    accept="image/*"
+                    required
+                />
+                {imagePreview && (
+                    <img src={imagePreview} alt="Avatar Preview" style={{ width: "200px", marginTop: "10px" }} />
+                )}
             </div>
-            
+
             <div className="form-group">
-              <label>Hình ảnh chi tiết</label>
-              <input
-                type="file"
-                name="image"
-                // onChange={handleFileChange}
-                accept="image/*"
-                required
-              />
+                <label>Hình ảnh chi tiết</label>
+                <input
+                    type="file"
+                    name="detailImages"
+                    multiple // Cho phép chọn nhiều ảnh
+                    onChange={(e) => handleFileChange(e, "detail")}
+                    accept="image/*"
+                    required
+                />
+                {detailImagePreview && detailImagePreview.map((previewUrl, index) => (
+                    <img key={index} src={previewUrl} alt={`Detail Preview ${index + 1}`} style={{ width: "200px", marginTop: "10px" }} />
+                ))}
             </div>
 
             <div className="form-actions">

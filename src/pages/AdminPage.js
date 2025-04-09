@@ -399,7 +399,7 @@ const AdminPage = () => {
                         <td>{post.fullName}</td>
                         <td>{statusMapping[post.status] || post.status}</td>
                         <td>{new Date(post.created_at).toLocaleDateString()}</td>
-                      </tr>
+                        </tr>
                     ))}
                   </tbody>
                 </table>
@@ -407,78 +407,78 @@ const AdminPage = () => {
               </div>
             )}
 
-{activePostsTab === 'pending' && (
-  <div className="posts-container">
-    <h2>Bài Đăng Đang Chờ Duyệt</h2>
-    <div className="table-container">
-      <table className="data-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Tiêu Đề</th>
-            <th>Người Đăng</th>
-            <th>Ngày Đăng</th>
-            <th>Hành Động</th>
-          </tr>
-        </thead>
-        <tbody>
-          {pendingPosts.map((post) => (
-            <tr key={post.id}>
-              <td>{post.id}</td>
-              <td>{post.title}</td>
-              <td>{post.fullName}</td>
-              <td>{new Date(post.created_at).toLocaleDateString()}</td>
-              <td>
-                <button
-                  className="btn btn-info"
-                  onClick={() => getPostDetails(post.id)}
-                >
-                  Xem Chi Tiết
-                </button>
-                <button
-                  className="btn btn-success"
-                  onClick={() => updatePostStatus(post.id, "approved")}
-                >
-                  Duyệt
-                </button>
-                <button
-                  className="btn btn-rejected"
-                  onClick={() => updatePostStatus(post.id, "rejected")}
-                >
-                  Từ Chối
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            {activePostsTab === 'pending' && (
+              <div className="posts-container">
+                <h2>Bài Đăng Đang Chờ Duyệt</h2>
+                <div className="table-container">
+                  <table className="data-table">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Tiêu Đề</th>
+                        <th>Người Đăng</th>
+                        <th>Ngày Đăng</th>
+                        <th>Hành Động</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {pendingPosts.map((post) => (
+                        <tr key={post.id}>
+                          <td>{post.id}</td>
+                          <td>{post.title}</td>
+                          <td>{post.fullName}</td>
+                          <td>{new Date(post.created_at).toLocaleDateString()}</td>
+                          <td>
+                            <button
+                              className="btn btn-info"
+                              onClick={() => getPostDetails(post.id)}
+                            >
+                              Xem Chi Tiết
+                            </button>
+                            <button
+                              className="btn btn-success"
+                              onClick={() => updatePostStatus(post.id, "approved")}
+                            >
+                              Duyệt
+                            </button>
+                            <button
+                              className="btn btn-rejected"
+                              onClick={() => updatePostStatus(post.id, "rejected")}
+                            >
+                              Từ Chối
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
 
-      {selectedPost && (
-        <div className="post-details">
-          <h2>Chi Tiết Bài Đăng</h2>
-          <button
-            className="btn btn-danger"
-            onClick={() => setSelectedPost(null)}
-          >
-            X
-          </button>
-          <div className="post-info">
-            <p><strong>ID:</strong> {selectedPost.id}</p>
-            <p><strong>Tiêu Đề:</strong> {selectedPost.title}</p>
-            <p><strong>Nội Dung:</strong> {selectedPost.content}</p>
-            <p><strong>Người Đăng:</strong> {selectedPost.fullName || "Không xác định"}</p>
-            <p><strong>Ngày Đăng:</strong> {new Date(selectedPost.created_at).toLocaleDateString()}</p>
-            <p><strong>Trạng Thái:</strong> {statusMapping[selectedPost.status] || "Không xác định"}</p>
-            <p><strong>Loại Phòng:</strong> {selectedPost.roomType?.typeName || "Không xác định"}</p>
-            <p><strong>Khoảng Giá:</strong> {selectedPost.priceRange?.rangeName || "Không xác định"}</p>
-            <p><strong>Địa Chỉ:</strong> {selectedPost.location?.address || "Không xác định"}</p>
-            <p><strong>Diện tích:</strong> {selectedPost.area?.size ? `${selectedPost.area.size}m²` : "Không xác định"}</p>
-          </div>
-        </div>
-      )}
-    </div>
-  </div>
-)}
+                  {selectedPost && (
+                    <div className="post-details">
+                      <h2>Chi Tiết Bài Đăng</h2>
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => setSelectedPost(null)}
+                      >
+                        X
+                      </button>
+                      <div className="post-info">
+                        <p><strong>ID:</strong> {selectedPost.id}</p>
+                        <p><strong>Tiêu Đề:</strong> {selectedPost.title}</p>
+                        <p><strong>Nội Dung:</strong> {selectedPost.content}</p>
+                        <p><strong>Người Đăng:</strong> {selectedPost.fullName || "Không xác định"}</p>
+                        <p><strong>Ngày Đăng:</strong> {new Date(selectedPost.created_at).toLocaleDateString()}</p>
+                        <p><strong>Trạng Thái:</strong> {statusMapping[selectedPost.status] || "Không xác định"}</p>
+                        <p><strong>Loại Phòng:</strong> {selectedPost.roomType?.typeName || "Không xác định"}</p>
+                        <p><strong>Khoảng Giá:</strong> {selectedPost.priceRange?.rangeName || "Không xác định"}</p>
+                        <p><strong>Địa Chỉ:</strong> {selectedPost.location?.address || "Không xác định"}</p>
+                        <p><strong>Diện tích:</strong> {selectedPost.area?.size ? `${selectedPost.area.size}m²` : "Không xác định"}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
 
             {activePostsTab === 'approved' && (
@@ -615,6 +615,7 @@ const AdminPage = () => {
                   </div>
 
                   <h3>Bài Đăng Của Tài Khoản</h3>
+                  <div className="owner-posts-list">
                   <table className="data-table">
                     <thead>
                       <tr>
@@ -644,6 +645,7 @@ const AdminPage = () => {
                       ))}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               )}
             </div>

@@ -242,4 +242,9 @@
     font-weight: bold;
   }
   
+  .thumbnail {
+    border-radius: 8px;
+    margin-top: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
   

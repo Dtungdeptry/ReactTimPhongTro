@@ -16,33 +16,26 @@ const RegisterPage = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault();  
     
-    console.log("Dữ liệu gửi lên:", formData);
-  
-    try {
-      const response = await fetch("http://localhost:8080/auth/register", {
+    alert("Vui lòng chờ OTP để xác thực tài khoản");
+
+    const response = await fetch("http://localhost:8080/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
-      });
-  
-      if (response.ok) {
+    });
+
+    if (response.ok) {
         const message = await response.text();
         alert(message);
         localStorage.setItem("username", formData.username);
         navigate("/otp");
-      } else {
+    } else {
         const errorData = await response.text();
         alert(`Lỗi đăng ký: ${errorData}`);
-      }      
-    } catch (error) {
-      alert("Lỗi kết nối hoặc máy chủ không phản hồi!");
-      console.error("Lỗi:", error);
     }
-  };
-  
-
+};
 
   return (
     <div className="auth-container">

@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const AccountUser = () => {
-  const [user, setUser] = useState(null); // Khai báo state user
+  const [user, setUser] = useState(null);
   const [userForm, setUserForm] = useState({
     username: '',
     fullName: '',
@@ -17,19 +17,15 @@ const AccountUser = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      try {
-        const response = await axios.get(`http://localhost:8080/user/${userId}`);
-        setUser(response.data);
-        setUserForm({
-          username: response.data.username || '',
-          fullName: response.data.fullName || '',
-          email: response.data.email || '',
-          phone: response.data.phone || '',
-          address: response.data.address || ''
-        });
-      } catch (error) {
-        console.error("Lỗi khi tải thông tin người dùng:", error);
-      }
+      const response = await axios.get(`http://localhost:8080/user/${userId}`);
+      setUser(response.data);
+      setUserForm({
+        username: response.data.username || '',
+        fullName: response.data.fullName || '',
+        email: response.data.email || '',
+        phone: response.data.phone || '',
+        address: response.data.address || ''
+      });
     };
 
     fetchUserData();
@@ -46,30 +42,27 @@ const AccountUser = () => {
 
   const handleUpdateUser = async (e) => {
     e.preventDefault();
-    try {
-      const updatedUserData = {
-        ...user,
-        username: userForm.username,
-        fullName: userForm.fullName,
-        email: userForm.email,
-        phone: userForm.phone,
-        address: userForm.address
-      };
-      
-      const response = await axios.put(`http://localhost:8080/user/${userId}`, updatedUserData);
-      setUser(response.data);
-      setIsEditing(false);
-      alert('Cập nhật thông tin thành công!');
-    } catch (error) {
-      console.error('Error updating user:', error);
-      alert('Có lỗi xảy ra khi cập nhật thông tin.');
-    }
+    const updatedUserData = {
+      ...user,
+      username: userForm.username,
+      fullName: userForm.fullName,
+      email: userForm.email,
+      phone: userForm.phone,
+      address: userForm.address
+    };
+    
+    await axios.put(`http://localhost:8080/user/${userId}`, updatedUserData);
+    setUser(updatedUserData);
+    setIsEditing(false);
+  };
+
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
   };
 
   return (
     <div className="profile-section">
         <div className="profile-section-header">
-      <button className="back-button" onClick={handleGoBack}>←</button>
       <h2>Thông tin cá nhân</h2>
       </div>
       {!user ? (

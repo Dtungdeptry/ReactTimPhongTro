@@ -30,7 +30,6 @@ const OwnerPage = () => {
   }, [userId]);
 
   const fetchDropdownData = async () => {
-    try {
         const token = localStorage.getItem("token");
         if (!token) {
             throw new Error("Không tìm thấy token trong localStorage!");
@@ -61,14 +60,9 @@ const OwnerPage = () => {
         setRoomTypes(roomRes.data);
         setLocations(locationRes.data);
         setAreas(areaRes.data);
-  
-    } catch (error) {
-        console.error("Lỗi khi gọi API:", error.response?.data || error.message);
-    }
   }; 
   
   const fetchPosts = async () => {
-    try {
         const token = localStorage.getItem("accessToken");
         const response = await fetch(`http://localhost:8080/owner/post/${userId}`, {
             method: "GET",
@@ -83,18 +77,11 @@ const OwnerPage = () => {
         const data = await response.json();
         console.log("Danh sách bài đăng:", data);
         setPosts(data); // 🟢 Cập nhật state
-    } catch (error) {
-        console.error("Lỗi khi lấy bài đăng:", error);
-    }
 };
 
 const searchPosts = async (keyword) => {
-  try {
     const response = await axios.get(`http://localhost:8080/owner/post/${userId}/search?keyword=${keyword}`);
     setPosts(response.data);
-  } catch (error) {
-    console.error('Error searching posts:', error);
-  }
 };
 
   const handleInputChange = (e) => {
@@ -105,15 +92,9 @@ const searchPosts = async (keyword) => {
   const handleSearch = async (e) => {
     e.preventDefault();
     if (searchKeyword.trim() === "") {
-      // Nếu không có từ khóa, reload lại tất cả bài
-      try {
         const response = await axios.get(`http://localhost:8080/owner/post/${userId}`);
         setPosts(response.danpcdta);
-      } catch (error) {
-        console.error("Error loading all posts:", error);
-      }
     } else {
-      // Gọi hàm tìm kiếm
       searchPosts();
     }
   };
@@ -122,24 +103,16 @@ const searchPosts = async (keyword) => {
     const keyword = e.target.value;
     setSearchKeyword(keyword);
   
-    // Tìm kiếm ngay khi có thay đổi
     if (keyword.trim() === "") {
-      // Nếu không có từ khóa, load lại tất cả bài
       loadAllPosts();
     } else {
-      // Nếu có từ khóa, gọi hàm tìm kiếm
       searchPosts(keyword);
     }
   };
   
-  // Hàm load tất cả bài viết
   const loadAllPosts = async () => {
-    try {
       const response = await axios.get(`http://localhost:8080/owner/post/${userId}`);
       setPosts(response.data);
-    } catch (error) {
-      console.error("Error loading all posts:", error);
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -165,7 +138,6 @@ const searchPosts = async (keyword) => {
         images: imageUrls
     };
     
-    try {
         if (isEditing && selectedPost) {
             await axios.put(`http://localhost:8080/owner/post/${userId}/${selectedPost.id}`, postData);
         } else {
@@ -173,20 +145,13 @@ const searchPosts = async (keyword) => {
         }
         resetForm();
         fetchPosts();
-    } catch (error) {
-        console.error('Error saving post:', error);
-    }
 };
 
 
   const handleDelete = async (postId) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa bài đăng này?')) {
-      try {
         await axios.delete(`http://localhost:8080/owner/post/${userId}/${postId}`);
         fetchPosts();
-      } catch (error) {
-        console.error('Error deleting post:', error);
-      }
     }
   };
 

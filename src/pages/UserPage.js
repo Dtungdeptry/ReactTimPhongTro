@@ -42,10 +42,8 @@ const UserPage = () => {
   }, [userId]);
 
   const fetchUserData = async () => {
-    try {
       const response = await axios.get(`http://localhost:8080/user/${userId}`);
       setUser(response.data);
-      // Initialize form with user data
       setUserForm({
         username: response.data.username || '',
         fullName: response.data.fullName || '',
@@ -53,53 +51,32 @@ const UserPage = () => {
         phone: response.data.phone || '',
         address: response.data.address || ''
       });
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    }
   };
 
   const fetch5LatestPost = async () => {
-    try {
       const response = await axios.get("http://localhost:8080/user/post/latest");
       console.log(response.data);
-      setPosts(response.data); // Lưu vào state mà không cần slice nữa
-      setLoading(false); // Đã tải xong dữ liệu
-    } catch (error) {
-      console.error('Error fetching Latest posts:', error);
-      setError('Có lỗi xảy ra khi tải bài đăng'); // Cập nhật thông báo lỗi
-      setLoading(false); // Đã tải xong dữ liệu dù có lỗi
-    }
+      setPosts(response.data); 
+      setLoading(false); 
   };  
 
   const fetchApprovedPosts = async () => {
-    try {
       const response = await axios.get("http://localhost:8080/user/post/status/approved");
       setPosts(response.data);
-    } catch (error) {
-      console.error('Error fetching approved posts:', error);
-    }
   };
 
   const fetchFilterOptions = async () => {
-    try {
-      // Fetch price ranges
       const priceRangesResponse = await axios.get("http://localhost:8080/user/post/price-ranges");
       setPriceRanges(priceRangesResponse.data);
       
-      // Fetch room types
       const roomTypesResponse = await axios.get("http://localhost:8080/user/post/room-types");
       setRoomTypes(roomTypesResponse.data);
       
-      // Fetch locations
       const locationsResponse = await axios.get("http://localhost:8080/user/post/locations");
       setLocations(locationsResponse.data);
       
-      // Fetch areas
       const areasResponse = await axios.get("http://localhost:8080/user/post/areas");
       setAreas(areasResponse.data);
-    } catch (error) {
-      console.error('Error fetching filter options:', error);
-    }
   };
 
   const handleSearchCriteriaChange = (e) => {
@@ -108,7 +85,6 @@ const UserPage = () => {
   };
   
   const fetchFilteredPosts = async () => {
-    try {
       const response = await axios.get("http://localhost:8080/user/search", {
         params: {
           priceRange: searchCriteria.priceRange || '',
@@ -119,9 +95,6 @@ const UserPage = () => {
         },
       });
       setPosts(response.data); 
-    } catch (error) {
-      console.error('Error fetching filtered posts:', error);
-    }
   };
   
   const handleLogout = () => {
@@ -131,7 +104,6 @@ const UserPage = () => {
 
   const handleUpdateUser = async (e) => {
     e.preventDefault();
-    try {
       const updatedUserData = {
         ...user,
         username: userForm.username,
@@ -145,10 +117,6 @@ const UserPage = () => {
       setUser(response.data);
       setIsEditing(false);
       alert('Cập nhật thông tin thành công!');
-    } catch (error) {
-      console.error('Error updating user:', error);
-      alert('Có lỗi xảy ra khi cập nhật thông tin.');
-    }
   };
 
   const handleAccount = () => {
@@ -157,8 +125,6 @@ const UserPage = () => {
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    try {
-      // Build query params
       const params = new URLSearchParams();
       if (searchCriteria.priceRange) params.append('priceRange', searchCriteria.priceRange);
       if (searchCriteria.roomType) params.append('roomType', searchCriteria.roomType);
@@ -167,9 +133,6 @@ const UserPage = () => {
       
       const response = await axios.get(`http://localhost:8080/user/search?${params.toString()}`);
       setPosts(response.data);
-    } catch (error) {
-      console.error('Error searching posts:', error);
-    }
   };
 
   const formatDate = (dateString) => {

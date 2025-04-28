@@ -28,7 +28,7 @@ const AdminPage = () => {
     const token = localStorage.getItem('jwtToken');
     if (!token) {
         console.warn('Không tìm thấy token, vui lòng đăng nhập lại.');
-        return {};  // Trả về object rỗng nếu không có token
+        return {};  
     }
     return { Authorization: `Bearer ${token}` };
   };
@@ -39,236 +39,149 @@ const AdminPage = () => {
   };
 
   const getPostDetails = async (id) => {
-    console.log("Post ID:", id); // In ra ID để kiểm tra
-    try {
+    console.log("Post ID:", id); 
         const response = await fetch(`http://localhost:8080/admin/post/${id}`);
         const data = await response.json();
-        console.log("Post data:", data); // In ra data để kiểm tra
-        setSelectedPost(data); // Cập nhật bài đăng được chọn
-    } catch (error) {
-        console.error("Lỗi khi lấy chi tiết bài đăng:", error);
-        alert("Không thể lấy thông tin chi tiết bài đăng!");
-    }
+        console.log("Post data:", data); 
+        setSelectedPost(data); 
   };
   
-  // Fetch all posts
   const fetchAllPosts = async () => {
-    try {
       setLoading(true);
       const response = await axios.get(`${API_BASE_URL}/admin/post`, {
         headers: getAuthHeader()
       });
       setAllPosts(response.data);
       setLoading(false);
-    } catch (err) {
-      setError('Không có bài đăng');
-      setLoading(false);
-    }
   };
 
-  // Fetch pending posts
   const fetchPendingPosts = async () => {
-    try {
       setLoading(true);
       const response = await axios.get(`${API_BASE_URL}/admin/post/status/pending`, {
         headers: getAuthHeader()
       });
       setPendingPosts(response.data);
       setLoading(false);
-    } catch (err) {
-      setError('Không có bài đăng đang chờ');
-      setLoading(false);
-    }
   };
 
-  // Fetch approved posts
   const fetchApprovedPosts = async () => {
-    try {
       setLoading(true);
       const response = await axios.get(`${API_BASE_URL}/admin/post/status/approved`, {
         headers: getAuthHeader()
       });
       setApprovedPosts(response.data);
       setLoading(false);
-    } catch (err) {
-      setError('Không có bài đăng đã được duyệt');
-      setLoading(false);
-    }
   };
 
-  // Fetch rejected posts
   const fetchRejectedPosts = async () => {
-    try {
       setLoading(true);
       const response = await axios.get(`${API_BASE_URL}/admin/post/status/rejected`, {
         headers: getAuthHeader()
       });
       setRejectedPosts(response.data);
       setLoading(false);
-    } catch (err) {
-      setError('Không có bài đăng bị từ chối');
-      setLoading(false);
-    }
   };
 
-  // Fetch owners
   const fetchOwners = async () => {
-    try {
       setLoading(true);
       const response = await axios.get(`${API_BASE_URL}/admin/owners`, {
         headers: getAuthHeader()
       });
       setOwners(response.data);
       setLoading(false);
-    } catch (err) {
-      setError('Failed to fetch owners');
-      setLoading(false);
-    }
   };
 
-  
-  // Fetch users
   const fetchUsers = async () => {
-    try {
       setLoading(true);
       const response = await axios.get(`${API_BASE_URL}/admin/users`, {
         headers: getAuthHeader()
       });
       setUsers(response.data);
       setLoading(false);
-    } catch (err) {
-      setError('Failed to fetch users');
-      setLoading(false);
-    }
   };
 
-  // Search owners
   const searchOwners = async () => {
     if (!searchKeyword.trim()) {
       fetchOwners();
       return;
     }
-    
-    try {
-      setLoading(true);
+          setLoading(true);
       const response = await axios.get(`${API_BASE_URL}/admin/owners/search?keyword=${searchKeyword}`, {
         headers: getAuthHeader()
       });
       setOwners(response.data);
       setLoading(false);
-    } catch (err) {
-      setError('Không có tài khoản đang tìm');
-      setLoading(false);
-    }
   };
 
-  // Search users
   const searchUsers = async () => {
     if (!searchKeyword.trim()) {
       fetchUsers();
       return;
     }
-    
-    try {
       setLoading(true);
       const response = await axios.get(`${API_BASE_URL}/admin/users/search?keyword=${searchKeyword}`, {
         headers: getAuthHeader()
       });
       setUsers(response.data);
       setLoading(false);
-    } catch (err) {
-      setError('Không có người dùng cần tìm');
-      setLoading(false);
-    }
   };
 
-  // Delete approved post
   const deleteApprovedPost = async (id) => {
     if (!window.confirm('Bạn có chắc muốn xóa bài đăng này?')) return;
     
-    try {
       setLoading(true);
       await axios.delete(`${API_BASE_URL}/admin/post/status/approved/${id}`, {
         headers: getAuthHeader()
       });
       fetchApprovedPosts();
       setLoading(false);
-    } catch (err) {
-      setError('Xóa bài đăng không thành công');
-      setLoading(false);
-    }
   };
 
-  // Delete owner
   const deleteOwner = async (id) => {
     if (!window.confirm('Bạn có chắc muốn xóa tài khoản này?')) return;
     
-    try {
       setLoading(true);
       await axios.delete(`${API_BASE_URL}/admin/owners/${id}`, {
         headers: getAuthHeader()
       });
       fetchOwners();
       setLoading(false);
-    } catch (err) {
-      setError('Không xóa được tài khoản vì vẫn còn tồn tại bài đăng');
-      setLoading(false);
-    }
   };
 
-  // Delete user
   const deleteUser = async (id) => {
     if (!window.confirm('Bạn có chắc muốn xóa tài khoản này?')) return;
     
-    try {
       setLoading(true);
       await axios.delete(`${API_BASE_URL}/admin/users/${id}`, {
         headers: getAuthHeader()
       });
       fetchUsers();
       setLoading(false);
-    } catch (err) {
-      setError('Xóa người dùng không thành công');
-      setLoading(false);
-    }
   };
 
-  // View owner posts
   const viewOwnerPosts = async (userId) => {
-    try {
       setLoading(true);
       const response = await axios.get(`${API_BASE_URL}/admin/posts/${userId}`, {
         headers: getAuthHeader()
       });
       setOwnerPosts(response.data);
       setLoading(false);
-    } catch (err) {
-      setError('Không có tài khoản đăng bài');
-      setLoading(false);
-    }
   };
 
-  // Delete owner's post
   const deleteOwnerPost = async (userId, postId) => {
     if (!window.confirm('Bạn có chắc muốn xóa bài đăng này?')) return;
     
-    try {
       setLoading(true);
       await axios.delete(`${API_BASE_URL}/admin/posts/${userId}/${postId}`, {
         headers: getAuthHeader()
       });
       viewOwnerPosts(userId);
       setLoading(false);
-    } catch (err) {
-      setError('Xóa bài không thành công');
-      setLoading(false);
-    }
   };
 
   const updatePostStatus = async (postId, newStatus) => {
     if (!window.confirm(`Bạn có chắc muốn ${newStatus === "approved" ? "duyệt" : "từ chối"} bài đăng này?`)) return;
     
-    try {
       setLoading(true);
       await axios.put(
         `${API_BASE_URL}/admin/post/${postId}?status=${newStatus}`,
@@ -276,65 +189,39 @@ const AdminPage = () => {
         { headers: getAuthHeader() } 
       );
       fetchAllPosts();
-    } catch (err) {
-      console.error(err);
-      setError("Không thể cập nhật trạng thái bài đăng");
-    } finally {
-      setLoading(false);
-    }
   };
 
-  // Promote user to owner
   const promoteUserToOwner = async (userId) => {
     if (!window.confirm('Bạn có chắc muốn nâng cấp người dùng này?')) return;
     
-    try {
       setLoading(true);
       await axios.put(`${API_BASE_URL}/admin/users/${userId}`, 
-        { role: 3 }, // 3 is owner role
+        { role: 3 }, 
         { headers: getAuthHeader() }
       );
       fetchUsers();
       setLoading(false);
-    } catch (err) {
-      setError('Không nâng cấp người dùng được');
-      setLoading(false);
-    }
   };
 
-  // Get user details
   const getUserDetails = async (userId) => {
-    try {
       setLoading(true);
       const response = await axios.get(`${API_BASE_URL}/admin/users/${userId}`, {
         headers: getAuthHeader()
       });
       setSelectedUser(response.data);
       setLoading(false);
-    } catch (err) {
-      setError('Failed to fetch user details');
-      setLoading(false);
-    }
   };
 
-  // Get owner details
   const getOwnerDetails = async (ownerId) => {
-    try {
       setLoading(true);
       const response = await axios.get(`${API_BASE_URL}/admin/owners/${ownerId}`, {
         headers: getAuthHeader()
       });
       setSelectedOwner(response.data);
-      // Also fetch their posts
       viewOwnerPosts(ownerId);
       setLoading(false);
-    } catch (err) {
-      setError('Failed to fetch owner details');
-      setLoading(false);
-    }
   };
 
-  // Load initial data
   useEffect(() => {
     fetchAllPosts();
     fetchPendingPosts();
@@ -344,7 +231,6 @@ const AdminPage = () => {
     fetchUsers();
   }, []);
 
-  // Render tab content based on active tab
   const renderTabContent = () => {
     switch (activeTab) {
       case 'posts':
@@ -554,7 +440,7 @@ const AdminPage = () => {
             <div className="search-box">
               <input 
                 type="text" 
-                placeholder="Tìm kiếm tài khoản đăng bài..."
+                placeholder="Tìm kiếm số điện thoại..."
                 value={searchKeyword} 
                 onChange={e => setSearchKeyword(e.target.value)} 
               />
@@ -612,6 +498,7 @@ const AdminPage = () => {
                     <p><strong>Điện Thoại:</strong> {selectedOwner.phone}</p>
                     <p><strong>Địa Chỉ:</strong> {selectedOwner.address}</p>
                     <p><strong>Thời Gian Tạo Tài Khoản:</strong> {new Date(selectedOwner.created_at).toLocaleDateString()}</p>
+                    <p><strong>Xác thực tài khoản:</strong> {selectedOwner.verified ? "Đã xác thực" : "Chưa xác thực"}</p>
                   </div>
 
                   <h3>Bài Đăng Của Tài Khoản</h3>
@@ -658,7 +545,7 @@ const AdminPage = () => {
             <div className="search-box">
               <input 
                 type="text" 
-                placeholder="Tìm kiếm người dùng..."
+                placeholder="Tìm kiếm số điện thoại..."
                 value={searchKeyword} 
                 onChange={e => setSearchKeyword(e.target.value)} 
               />
@@ -722,7 +609,8 @@ const AdminPage = () => {
                     <p><strong>Điện Thoại:</strong> {selectedUser.phone}</p>
                     <p><strong>Địa Chỉ:</strong> {selectedUser.address}</p>
                     <p><strong>Thời Gian Tạo Tài Khoản:</strong> {new Date(selectedUser.created_at).toLocaleDateString()}</p>
-                  </div>
+                    <p><strong>Xác thực tài khoản:</strong> {selectedUser.verified ? "Đã xác thực" : "Chưa xác thực"}</p>
+                    </div>
                 </div>
               )}
             </div>

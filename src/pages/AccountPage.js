@@ -17,28 +17,23 @@ const AccountPage = () => {
   // Lấy thông tin người dùng từ API khi trang được load
   useEffect(() => {
     const fetchUserData = async () => {
-      try {
-        const response = await fetch(`http://localhost:8080/owner/${userId}`, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        });
+      const response = await fetch(`http://localhost:8080/owner/${userId}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
 
-        if (response.ok) {
-          const data = await response.json();
-          setUserData(data);
-        } else {
-          alert("Không thể tải thông tin người dùng!");
-        }
-      } catch (error) {
-        console.error("Lỗi khi lấy thông tin người dùng:", error);
+      if (response.ok) {
+        const data = await response.json();
+        setUserData(data);
       }
     };
 
     fetchUserData();
-  }, []);
+  }, [userId]);
 
   // Hàm xử lý đăng xuất
   const handleLogout = () => {
+    localStorage.removeItem("userId");  // Xóa userId khi đăng xuất
     alert("Đăng xuất thành công!");
     navigate("/login");
   };
@@ -51,22 +46,18 @@ const AccountPage = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
 
-    try {
-      const response = await fetch(`http://localhost:8080/owner/${userId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData),
-      });
+    const response = await fetch(`http://localhost:8080/owner/${userId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData),
+    });
 
-      if (response.ok) {
-        alert("Cập nhật thông tin thành công!");
-      } else {
-        alert("Lỗi cập nhật thông tin!");
-      }
-    } catch (error) {
-      console.error("Lỗi khi cập nhật thông tin:", error);
+    if (response.ok) {
+      alert("Cập nhật thông tin thành công!");
+    } else {
+      alert("Lỗi cập nhật thông tin. Vui lòng thử lại!");
     }
-  };
+  }
 
   return (
     <div className="auth-container">

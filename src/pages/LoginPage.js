@@ -9,7 +9,6 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
         const response = await fetch("http://localhost:8080/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -47,10 +46,6 @@ const LoginPage = () => {
         } else {
             alert(data.message || "Sai tài khoản hoặc mật khẩu!");
         }
-    } catch (error) {
-        console.error("Lỗi đăng nhập:", error);
-        alert("Lỗi hệ thống! Vui lòng thử lại.");
-    }
 };
 
   

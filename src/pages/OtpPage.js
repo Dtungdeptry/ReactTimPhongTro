@@ -8,7 +8,6 @@ const OtpPage = () => {
   const navigate = useNavigate();
 
   const handleVerify = async () => {
-    try {
       if (!otp) {
         alert('Vui lòng nhập mã OTP!');
         return;
@@ -33,24 +32,16 @@ const OtpPage = () => {
         setMessage(result);
         alert('OTP không chính xác hoặc đã hết hạn!');
       }
-    } catch (error) {
-      setMessage('Lỗi kết nối đến server!');
-      alert('Lỗi kết nối đến server!');
-    }
   };
   
 
   const handleResendOtp = async () => {
-    try {
       const response = await fetch(`http://localhost:8080/auth/resend-otp?username=${localStorage.getItem('username')}`, {
         method: 'POST',
       });
       const result = await response.text();
       setMessage(result);
       alert('Mã OTP mới đã được gửi!');
-    } catch (error) {
-      setMessage('Lỗi khi gửi lại OTP!');
-    }
   };
 
   return (
